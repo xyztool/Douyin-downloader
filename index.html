@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>抖音去水印</title>
+    <meta name="referrer" content="never">
+    <meta charset="UTF-8">
+    <meta content='xyz8848,XYZ工具箱,抖音,抖音下载,抖音去水印下载,短视频,短视频去水印下载,去水印,删水印,原始视频,去LOGO,删LOGO,原视频' name='Keywords'>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta content='抖音一键去水印，粘贴抖音分享链接，一键获取原视频下载地址！' itemprop='description' name='Description'>
+    <link rel="stylesheet" href="css/element.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <a href="https://github.com/xyztool/Douyin-downloader" target="_blank"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+    <div id="app" v-cloak v-loading.fullscreen.lock="fullscreenLoading">
+        <div class="search">
+            <div class="logo">
+                <font color=orangered>D</font>ouyin <font color=orangered>D</font>ownloar
+            </div>
+            <el-input autoFocus="true" id="keyword" ref="keyword" v-model="keyword" placeholder="https://v.douyin.com/******/" class="form" size="large">
+                <el-button slot="append" icon="el-icon-search" @click="doPost">获取直链</el-button>
+            </el-input>
+        </div>
+        <div class="success" v-show="successShow">
+            <div style="color: rgb(49, 112, 143);padding: 15px">
+                {{successMessage}}
+            </div>
+            <el-button v-if="!needRefresh" type="success"><a :href="videoUrl"
+                    style="text-decoration:none;color: #ffffff" target="_blank">查看视频</a></el-button>
+            <el-button v-if="needRefresh" class="copy" type="primary" v-clipboard:copy="videoUrl"
+                v-clipboard:success="onCopySuccess" v-clipboard:error="onCopyError">复制链接</el-button>
+            <el-button type="danger" @click="clear">清空</el-button>
+        </div>
+        <div class="about">
+            <p>Made by <a href="https://www.xyz8848.com/">xyz8848</a></p>
+            <p><el-link href="https://github.com/xyztool/Douyin-downloader/issues" target="_blank">问题反馈</el-link> | <el-link href="http://donate.xyztool.tk/" target="_blank">赞助</el-link> | <el-link href="#" target="_blank">如何下载</el-link></p>
+        </div>
+        
+    </div>
+</body>
+<script src="js/vue-2.6.10.min.js"></script>
+<script src="js/axios.min.js"></script>
+<script src="js/element.js"></script>
+<script src="js/vue-clipboard.min.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                keyword: '',
+                fullscreenLoading: false,
+                videoUrl: '',
+                successShow: false,
+                successMessage: '',
+                needRefresh: false,
+            }
+        },
+        created() {
+        },
+        updated() { },
+        methods: {
+            doPost() {
+                var that = this;
+                that.fullscreenLoading = true;
+                axios.post('http://qsy.shuink.cn/wyindex.php', "url="+that.keyword)
+                    .then(function (response) {
+                        that.fullscreenLoading = false;
+                        console.log(response);
+                        if (response.data.status == 101) {
+                            that.successShow = true;
+                            that.videoUrl = response.data.data.url;
+                            that.successMessage = response.data.data.url;
+                            that.needRefresh = false;
+                        } else if (response.data.code == 301) {
+                            that.successShow = true;
+                            that.videoUrl = response.data.data;
+                            that.successMessage = response.data.msg;
+                            that.needRefresh = true;
+                        } else {
+                            that.$message.error(response.data.msg);
+                        }
+                    })
+                    .
+                    catch(function (error) {
+                        console.log(error)
+                        that.$message.error('连接超时，请刷新后重试！');
+                    });
+            },
+            clear() {
+                this.keyword = '';
+                this.successShow = false
+            },
+            onCopySuccess(e) {
+                this.$message({ message: '复制成功！', type: 'success' });
+            },
+            onCopyError(e) {
+                this.$message.error('复制失败！');
+            }
+        }
+    });
+</script>
+
+</html>
