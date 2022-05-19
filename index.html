@@ -64,7 +64,7 @@
             doPost() {
                 var that = this;
                 that.fullscreenLoading = true;
-                axios.post('http://qsy.shuink.cn/wyindex.php', "url="+that.keyword)
+                axios.post('https://aweme.snssdk.com/aweme/v1/aweme/detail/', "url="+that.keyword)
                     .then(function (response) {
                         that.fullscreenLoading = false;
                         console.log(response);
